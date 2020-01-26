@@ -1,4 +1,4 @@
-package cz.exampleproject.mediagroup.hw.gpcparser.gpc.parser;
+package cz.exampleproject.mediagroup.hw.gpcparser.parser;
 
 import cz.exampleproject.mediagroup.hw.gpcparser.exception.BadFormatException;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Payment;

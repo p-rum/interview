@@ -4,4 +4,4 @@ cz.exampleproject.mediagroup.hw.gpcparser.controller
 cz.exampleproject.mediagroup.hw.gpcparser.exception
 cz.exampleproject.mediagroup.hw.gpcparser.format.gpc
 cz.exampleproject.mediagroup.hw.gpcparser.model
-cz.exampleproject.mediagroup.hw.gpcparser.gpc.parser
+cz.exampleproject.mediagroup.hw.gpcparser.parser

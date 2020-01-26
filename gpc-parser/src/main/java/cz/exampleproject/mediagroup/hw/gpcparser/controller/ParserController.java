@@ -3,7 +3,7 @@ package cz.exampleproject.mediagroup.hw.gpcparser.controller;
 import cz.exampleproject.mediagroup.hw.gpcparser.PaymentRepository;
 import cz.exampleproject.mediagroup.hw.gpcparser.exception.BadFormatException;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Payment;
-import cz.exampleproject.mediagroup.hw.gpcparser.gpc.parser.GPCParser;
+import cz.exampleproject.mediagroup.hw.gpcparser.parser.GPCParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.trace.http.HttpTrace.Response;
 import org.springframework.http.MediaType;

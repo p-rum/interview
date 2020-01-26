@@ -1,11 +1,11 @@
-package cz.exampleproject.mediagroup.hw.gpcparser.gpc.parser;
+package cz.exampleproject.mediagroup.hw.gpcparser.parser.gpc;
 
 import cz.exampleproject.mediagroup.hw.gpcparser.config.AppConfigProperties;
 import cz.exampleproject.mediagroup.hw.gpcparser.exception.BadFormatException;
 import cz.exampleproject.mediagroup.hw.gpcparser.exception.FileException;
-import cz.exampleproject.mediagroup.hw.gpcparser.gpc.GPCPaymentDetails;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Payment;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Transaction;
+import cz.exampleproject.mediagroup.hw.gpcparser.parser.Parser;
 import javafx.util.converter.BigDecimalStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
