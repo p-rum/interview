@@ -1,8 +1,8 @@
 package cz.exampleproject.mediagroup.hw.gpcparser.parser.gpc;
 
-import cz.exampleproject.mediagroup.hw.gpcparser.config.AppConfigProperties;
-import cz.exampleproject.mediagroup.hw.gpcparser.exception.BadFormatException;
-import cz.exampleproject.mediagroup.hw.gpcparser.exception.FileException;
+import cz.exampleproject.mediagroup.hw.gpcparser.config.GPCConfigProperties;
+import cz.exampleproject.mediagroup.hw.gpcparser.exception.WrongDataFormatException;
+import cz.exampleproject.mediagroup.hw.gpcparser.format.GPCPaymentDetails;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Payment;
 import cz.exampleproject.mediagroup.hw.gpcparser.model.Transaction;
 import cz.exampleproject.mediagroup.hw.gpcparser.parser.Parser;
@@ -14,11 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,42 +26,29 @@ import java.util.List;
 
 
 /**
- * The type Gpc parser.
+ * The Gpc file format parser.
  */
 @Component
 public class GPCParser implements Parser {
 
+	/*Reads data from input stream, converts to string lines, switches by start of line,
+	 parse lines and create a new Payment object, or throws an exception.
+	 */
 	@Override
-	public Payment parseFile (String path) throws FileException {
-		LOGGER.info(String.format("Parsing file: %s", path));
+	public Payment parseFile (InputStream file) throws WrongDataFormatException {
+		LOGGER.info("Parsing file... ");
 		try {
-			FileInputStream stream = new FileInputStream(path);
-			InputStreamReader streamReader = new InputStreamReader(stream, properties.getCharset());
+			InputStreamReader streamReader = new InputStreamReader(file, properties.getCharset());
 			BufferedReader reader = new BufferedReader(streamReader);
 			return parse(reader);
-		} catch (FileNotFoundException e) {
-			throw new FileException(String.format("File %s not found, please check, if you filled valid path", path));
 		} catch (UnsupportedEncodingException ex) {
-			throw new FileException(String.format("Wrong file encoding! (should be %s)", properties.getCharset()));
-		} catch (BadFormatException | IOException e) {
-			throw new FileException(e.getMessage());
+			throw new WrongDataFormatException(String.format("Wrong file encoding! (should be %s)", properties.getCharset()));
+		} catch (IOException e) {
+			throw new WrongDataFormatException(e.getMessage());
 		}
 	}
 
-	@Override
-	public Payment parseText (String inputStream) throws BadFormatException {
-		try {
-			LOGGER.info("Parsing text");
-			StringReader inputStreamReader = new StringReader(inputStream);
-			BufferedReader reader = new BufferedReader(inputStreamReader);
-			return parse(reader);
-		} catch (Exception ex) {
-			LOGGER.warn("Error parsing text");
-			throw new BadFormatException(inputStream.getClass());
-		}
-	}
-
-	private Payment parse (BufferedReader reader) throws IOException, BadFormatException {
+	private Payment parse (BufferedReader reader) throws IOException {
 		Payment payment = parseLine074(reader.readLine());
 		String s;
 		List<Transaction> transactions = new ArrayList<>();
@@ -85,16 +70,21 @@ public class GPCParser implements Parser {
 					break;
 				case "079":
 					parseLine079(s, transactions.get(transactions.size() - 1));
+					break;
 				default:
-					throw new BadFormatException(Payment.class);
+					throw new WrongDataFormatException("Not a gpc line!");
 			}
 		}
 		payment.setTransactions(transactions);
-		LOGGER.info(String.format("Parsing finished: \n %s", payment.toString()));
+		LOGGER.info("Parsing finished");
 		return payment;
 	}
 
-	private Payment parseLine074 (String header) {
+	private Payment parseLine074 (String header) throws WrongDataFormatException {
+		LOGGER.debug("Parsing header..");
+		if (!header.substring(0, 3).equals("074") || header.length() != 128) {
+			throw new WrongDataFormatException("Wrong format of first line!");
+		}
 		Payment payment = new Payment();
 		payment.setAccountNumber(parseString(header, GPCPaymentDetails.accountNumber));
 		payment.setAccountOwner(parseString(header, GPCPaymentDetails.accountOwner));
@@ -113,7 +103,10 @@ public class GPCParser implements Parser {
 		return payment;
 	}
 
-	private Transaction parseLine075 (String details) {
+	private Transaction parseLine075 (String details) throws WrongDataFormatException {
+		if (!details.substring(0, 3).equals("075") || details.length() != 128) {
+			throw new WrongDataFormatException("Wrong format of first line!");
+		}
 		Transaction transaction = new Transaction();
 		transaction.setAccountNumber(parseString(details, GPCPaymentDetails.accountNumber));
 		transaction.setAccountingType(parseString(details, GPCPaymentDetails.accountingType));
@@ -185,6 +178,6 @@ public class GPCParser implements Parser {
 	private static final BigDecimalStringConverter bigDecimalConverter = new BigDecimalStringConverter();
 
 	@Autowired
-	AppConfigProperties properties;
+	GPCConfigProperties properties;
 }
 

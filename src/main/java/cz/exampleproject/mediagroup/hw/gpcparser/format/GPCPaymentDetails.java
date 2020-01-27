@@ -1,4 +1,4 @@
-package cz.exampleproject.mediagroup.hw.gpcparser.parser.gpc;
+package cz.exampleproject.mediagroup.hw.gpcparser.format;
 
 public enum GPCPaymentDetails {
 

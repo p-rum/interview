@@ -3,9 +3,9 @@ package cz.exampleproject.mediagroup.hw.gpcparser.exception;
 import java.io.IOException;
 
 
-public class FileException extends IOException {
+public class WrongDataFormatException extends IOException {
 
-	public FileException (String message) {
+	public WrongDataFormatException (String message) {
 		super(message);
 	}
 }
